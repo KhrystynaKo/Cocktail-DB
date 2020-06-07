@@ -21,10 +21,6 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
   },
-  footer: {
-    height: 20,
-    backgroundColor: "#cccccc",
-  },
   text: {
     paddingLeft: 15,
     fontSize: 18,

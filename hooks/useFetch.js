@@ -29,6 +29,7 @@ const reducer = (state, action) => {
 const useFetch = (pathname, options) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [data, setData] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     dispatch({
@@ -43,13 +44,13 @@ const useFetch = (pathname, options) => {
         return Promise.reject(response);
       })
       .then((json) => {
-        const newData =
-          pathname === "filter" ? data.concat(json.drinks) : json.drinks;
+        const newData = json.drinks;
         pathname === "list"
           ? newData.map((item) => {
               item.active = true;
             })
           : "";
+        setCategories(newData);
         setData(newData);
         dispatch({ type: "SUCCESS" });
       })
@@ -65,7 +66,7 @@ const useFetch = (pathname, options) => {
       });
   }, [pathname, options]);
 
-  return { state, dispatch, data, setData };
+  return { state, data, setData, categories, setCategories };
 };
 
 export default useFetch;

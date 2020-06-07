@@ -14,9 +14,9 @@ import useFilter from "../hooks/useFilter";
 import CocktailCard from "../components/CocktailCard";
 
 const CocktailsListScreen = () => {
-  const { categories } = useFilter();
+  const { categories } = useFetch("list", "list");
   const [numOfCategory, setNumOfCategory] = useState(0);
-  const [category, setCategory] = useState("Soft Drink / Soda");
+  const [category, setCategory] = useState("Cocktail");
 
   const changeCategory = () => {
     const nextNum = numOfCategory + 1;
@@ -24,7 +24,12 @@ const CocktailsListScreen = () => {
   };
 
   useEffect(() => {
-    setCategory(categories[numOfCategory].strCategory);
+    let newCategory;
+    categories.length >= 1
+      ? (newCategory = categories[numOfCategory].strCategory)
+      : "";
+    console.log(newCategory);
+    setCategory(newCategory);
   }, [numOfCategory, categories]);
 
   const { data, state } = useFetch("filter", category);
@@ -36,7 +41,7 @@ const CocktailsListScreen = () => {
       </View>
     );
   };
-
+  console.log(data);
   return (
     <View style={styles.container}>
       <SafeAreaView>
@@ -51,11 +56,10 @@ const CocktailsListScreen = () => {
             )}
             keyExtractor={(item) => item.idDrink}
             onEndReached={changeCategory}
-            onEndReachedThreshold={0.5}
+            onEndReachedThreshold={0.3}
             ListFooterComponent={renderFooter}
           />
         )}
-        <Text style={styles.error}>{state.error}</Text>
       </SafeAreaView>
     </View>
   );
@@ -64,9 +68,10 @@ const CocktailsListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    paddingBottom: 70,
   },
   footer: {
-    height: 20,
+    height: 50,
     backgroundColor: "#cccccc",
   },
   category: {
@@ -74,8 +79,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   error: {
-    fontSize: 20,
-    color: "red",
+    // fontSize: 20,
+    // color: "red",
   },
 });
 

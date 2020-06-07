@@ -1,30 +1,14 @@
 import { useState } from "react";
 import useFetch from "./useFetch";
+import AsyncStorage from "@react-native-community/async-storage";
 
 export const useFilter = () => {
-  const { data } = useFetch("list", "list");
-  const [categories, setCategories] = useState([
-    { strCategory: "Ordinary Drink", active: true },
-    { strCategory: "Soft Drink / Soda", active: true },
-    {
-      strCategory: "Milk / Float / Shake",
-      active: true,
-    },
-    { strCategory: "Other/Unknown", active: true },
-    { strCategory: "Cocoa", active: true },
-    { strCategory: "Shot", active: true },
-    { strCategory: "Coffee / Tea", active: true },
-    { strCategory: "Homemade Liqueur", active: true },
-    {
-      strCategory: "Punch / Party Drink",
-      active: true,
-    },
-    { strCategory: "Beer", active: true },
-    { strCategory: "Soft Drink / Soda", active: true },
-  ]);
+  const { categories, setCategories } = useFetch("list", "list");
+  const [newCategoryList, setNewCategoryList] = useState([]);
 
   const filterActiveCategories = () => {
-    setCategories(categories.filter((item) => item.active === true));
+    const filterCategories = categories.filter((item) => item.active === true);
+    setNewCategoryList(filterCategories);
   };
 
   const activeFilter = (value) => {
@@ -37,7 +21,7 @@ export const useFilter = () => {
       })
     );
   };
-  return { data, categories, activeFilter, filterActiveCategories };
+  return { categories, activeFilter, filterActiveCategories, newCategoryList };
 };
 
 export default useFilter;
