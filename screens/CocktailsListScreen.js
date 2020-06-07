@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-community/async-storage";
+
 import {
   View,
   Text,
@@ -14,14 +16,26 @@ import useFilter from "../hooks/useFilter";
 import CocktailCard from "../components/CocktailCard";
 
 const CocktailsListScreen = () => {
-  const { categories } = useFetch("list", "list");
+  const { categories, setCategories } = useFetch();
   const [numOfCategory, setNumOfCategory] = useState(0);
-  const [category, setCategory] = useState("Cocktail");
+  const [category, setCategory] = useState("Beer");
 
   const changeCategory = () => {
     const nextNum = numOfCategory + 1;
     nextNum < categories.length ? setNumOfCategory(nextNum) : "";
   };
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@storage_Key");
+      jsonValue != null ? setCategories(JSON.parse(jsonValue)) : "";
+    } catch (e) {
+      // error reading value
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, []);
 
   useEffect(() => {
     let newCategory;
@@ -32,7 +46,7 @@ const CocktailsListScreen = () => {
     setCategory(newCategory);
   }, [numOfCategory, categories]);
 
-  const { data, state } = useFetch("filter", category);
+  const { data, state } = useFetch(category);
 
   const renderFooter = () => {
     return (
@@ -41,7 +55,9 @@ const CocktailsListScreen = () => {
       </View>
     );
   };
-  console.log(data);
+  console.log(categories);
+
+  // console.log(data);
   return (
     <View style={styles.container}>
       <SafeAreaView>

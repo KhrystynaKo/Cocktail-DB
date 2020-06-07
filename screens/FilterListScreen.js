@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 
 const FilterListScreen = ({ navigation }) => {
   const { activeFilter, filterActiveCategories } = useFilter();
-  const { categories } = useFetch("list", "list");
+  const { categories } = useFetch();
   const button = () => {
     filterActiveCategories();
     navigation.navigate("Drinks");
