@@ -1,38 +1,38 @@
-import { useState } from "react";
 import useFetch from "./useFetch";
 import AsyncStorage from "@react-native-community/async-storage";
 
 export const useFilter = () => {
-  const { categories, setCategories } = useFetch();
-  const [newCategoryList, setNewCategoryList] = useState([]);
+  const { filters, dispatch } = useFetch("list", "list");
 
-  const storeData = async (value) => {
+  const storeFilters = async (value) => {
     try {
       const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem("@storage_Key", jsonValue);
+      await AsyncStorage.setItem("@drink", jsonValue);
+    } catch (e) {}
+  };
+  const storeActiveFilters = async (value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem("@activeCategories", jsonValue);
     } catch (e) {}
   };
 
   const filterActiveCategories = () => {
-    const filterCategories = categories.filter((item) => item.active === true);
-    setCategories(filterCategories);
-    storeData(filterCategories);
+    const filterCategories = filters.filter((item) => item.active === true);
+    storeActiveFilters(filterCategories);
   };
-
-  console.log(categories);
 
   const activeFilter = (value) => {
-    console.log(value);
-    setCategories(
-      categories.map((item) => {
-        if (item.strCategory === value) {
-          item.active = !item.active;
-        }
-        return item;
-      })
-    );
+    const toggledCategories = filters.map((item) => {
+      if (item.strCategory === value) {
+        item.active = !item.active;
+      }
+      return item;
+    });
+    dispatch({ type: "SUCCESS_FILTERS", payload: toggledCategories });
+    storeFilters(toggledCategories);
   };
-  return { categories, activeFilter, filterActiveCategories, newCategoryList };
+  return { activeFilter, filterActiveCategories };
 };
 
 export default useFilter;

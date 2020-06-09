@@ -4,21 +4,18 @@ import { StyleSheet, SafeAreaView, FlatList, Button } from "react-native";
 import FilterItem from "../components/FilterItem";
 import useFilter from "../hooks/useFilter";
 
-import { createStackNavigator } from "@react-navigation/stack";
-const Stack = createStackNavigator();
-
 const FilterListScreen = ({ navigation }) => {
   const { activeFilter, filterActiveCategories } = useFilter();
-  const { categories } = useFetch();
+  const { filters } = useFetch("list", "list");
   const button = () => {
     filterActiveCategories();
-    navigation.navigate("Drinks");
+    navigation.push("Drinks");
   };
 
   return (
     <SafeAreaView>
       <FlatList
-        data={categories}
+        data={filters}
         renderItem={({ item, index }) => (
           <FilterItem item={item} activeFilter={activeFilter} key={index} />
         )}
