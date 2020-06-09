@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-community/async-storage";
+import React from "react";
 
 import {
   View,
@@ -24,7 +23,6 @@ const CocktailsListScreen = () => {
       </View>
     );
   };
-  console.log(drinks);
 
   return (
     <View style={styles.container}>

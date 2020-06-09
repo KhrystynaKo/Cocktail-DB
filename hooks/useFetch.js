@@ -43,7 +43,6 @@ const useFetch = (pathname, options) => {
       type: "REQUEST",
     });
     const url = `${API_URL}${pathname}.php?c=${options}`;
-    console.log(url);
 
     fetch(url)
       .then((response) => {

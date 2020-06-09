@@ -33,7 +33,6 @@ const reducer = (state, action) => {
 const useDrinks = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { filters } = useFetch("list", "list");
-  useFetch("filter", state.category);
 
   const getActiveFilters = async () => {
     try {
@@ -65,7 +64,6 @@ const useDrinks = () => {
         })
       : "";
   };
-  console.log(state.category);
 
   const changeCategory = () => {
     state.newFilterList.length >= 1
