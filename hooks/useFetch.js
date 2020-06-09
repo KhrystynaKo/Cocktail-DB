@@ -1,11 +1,12 @@
-import { useEffect, useReducer, useState } from "react";
-import AsyncStorage from "@react-native-community/async-storage";
+import { useEffect, useReducer } from "react";
 
 const API_URL = "https://www.thecocktaildb.com/api/json/v1/1/";
 
 const initialState = {
   loading: false,
   error: null,
+  drinks: [],
+  filters: [],
 };
 
 const reducer = (state, action) => {
@@ -13,12 +14,19 @@ const reducer = (state, action) => {
     case "REQUEST":
       return { error: null, loading: true };
 
-    case "SUCCESS":
+    case "SUCCESS_DRINKS":
       return {
+        ...state,
         loading: false,
-        error: null,
+        drinks: action.payload,
       };
 
+    case "SUCCESS_FILTERS":
+      return {
+        ...state,
+        loading: false,
+        filters: action.payload,
+      };
     case "ERROR":
       return { loading: false, error: action.payload };
 
@@ -27,17 +35,17 @@ const reducer = (state, action) => {
   }
 };
 
-const useFetch = (category) => {
+const useFetch = (pathname, options) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [data, setData] = useState([]);
-  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     dispatch({
       type: "REQUEST",
     });
+    const url = `${API_URL}${pathname}.php?c=${options}`;
+    console.log(url);
 
-    fetch(`${API_URL}filter.php?c=${category}`)
+    fetch(url)
       .then((response) => {
         if (response.status >= 200 && response.status <= 299) {
           return response.json();
@@ -46,9 +54,13 @@ const useFetch = (category) => {
       })
       .then((json) => {
         const newData = json.drinks;
-        console.log(category);
-        setData(newData);
-        dispatch({ type: "SUCCESS" });
+        pathname === "list"
+          ? newData.map((item) => {
+              item.active = true;
+            })
+          : "";
+        dispatch({ type: "SUCCESS_FILTERS", payload: newData });
+        dispatch({ type: "SUCCESS_DRINKS", payload: newData });
       })
       .catch((error) => {
         dispatch({
@@ -60,48 +72,9 @@ const useFetch = (category) => {
           },
         });
       });
-  }, [category]);
+  }, [pathname, options]);
 
-  useEffect(() => {
-    dispatch({
-      type: "REQUEST",
-    });
-
-    fetch(`${API_URL}list.php?c=list`)
-      .then((response) => {
-        if (response.status >= 200 && response.status <= 299) {
-          return response.json();
-        }
-        return Promise.reject(response);
-      })
-      .then((json) => {
-        const newData = json.drinks;
-        newData.map((item) => {
-          item.active = true;
-        });
-        const jsonValue = JSON.stringify(newData);
-        AsyncStorage.setItem("@storage_Key", jsonValue);
-
-        const jsonValu = AsyncStorage.getItem("@storage_Key");
-
-        jsonValu
-          ? setCategories(newData)
-          : setCategories(JSON.parse(jsonValue));
-        dispatch({ type: "SUCCESS" });
-      })
-      .catch((error) => {
-        dispatch({
-          type: "ERROR",
-          payload: {
-            url: error.url,
-            status: error.status,
-            statusText: error.statusText ? error.statusText : "Something wrong",
-          },
-        });
-      });
-  }, []);
-
-  return { state, data, setData, categories, setCategories };
+  return { ...state, dispatch };
 };
 
 export default useFetch;
